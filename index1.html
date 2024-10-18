@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Wolf2</title>
+  <link rel="icon" href="https://fav.farm/🌀" />
+
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Hand:wght@400..700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+  --width: 0;
+  --height: 0;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+body canvas {
+  position: absolute;
+  left: calc(50% - (var(--width))/2);
+  top: calc(50% - (var(--height))/2);
+  width: var(--width);
+  height: var(--height);
+  border-radius: 8px;
+}
+
+.edu-au-vic-wa-nt-hand-uniquifier {
+  font-family: "Edu AU VIC WA NT Hand", cursive;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+  </style>
+</head>
+<body>
+    <div>
+        <h2 class="edu-au-vic-wa-nt-hand-uniquifier" style="color: white; position: absolute; top: 0px; right: 10px; left: 10px; z-index: 1;">
+            Behold, I send you forth as sheep in the midst of wolves: be ye therefore wise as serpents, and harmless as doves. 17 But beware of men: for they will deliver you up to the councils, and they will scourge you in their synagogues; 18 And ye shall be brought before governors and kings for my sake, for a testimony against them and the Gentiles. 19 But when they deliver you up, take no thought how or what ye shall speak: for it shall be given you in that same hour what ye shall speak. 20 For it is not ye that speak, but the Spirit of your Father which speaketh in you. (Mt 10:16-20)
+        </h2>
+    </div>
+<!-- partial:index.partial.html -->
+<canvas id="c"></canvas>
+<!-- partial -->
+  <script>
+
+var c = document.getElementById('c'),
+    c_ = document.createElement('canvas'),
+    ctx = c.getContext('2d'),
+    ctx_ = c_.getContext('2d'),
+    dots = [],
+    delta = 10,
+    dot_size = 1,
+    count = 200,
+    img,
+    src = "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRV3xIYZXZVKZnA_n63nBnhEm7lvQE_rIZL9GrHF1SvsYGittmB_A";
+
+function Dot(x, y, dx, dy, color) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.color = color;
+}
+
+function drawDot(dot) {
+    ctx.fillStyle = dot.color;
+    ctx.beginPath();
+    ctx.arc(dot.x, dot.y, dot_size, 0, 2*Math.PI);
+    ctx.fill();
+}
+
+function getColor(x, y) {
+    var pixel = ctx_.getImageData(x, y, 1, 1),
+        data = pixel.data,
+        color = 'rgba('+  data[0] + ','
+                       +  data[1] + ','
+                       +  data[2] + ','
+                       + (data[3] / 255) +
+        ')';
+    
+    return color;
+}
+
+function initDot() {
+    var x = c.width/2,
+        y = c.height/2,
+        dx = -delta/2 + delta*Math.random(),
+        dy = -delta/2 + delta*Math.random(),
+        color = getColor(x, y);
+    dots.push(new Dot (x, y, dx, dy, color));
+}
+
+img = new Image();
+img.crossOrigin = 'anonymous'; 
+img.src = src;
+img.onload = function() {
+    c.width = c_.width = img.width;
+    c.height = c_.height = img.height;
+    c.style.setProperty('--width', c.width + 'px');
+    c.style.setProperty('--height', c.height + 'px');
+    ctx_.drawImage(img, 0, 0);
+
+    for(var i=0; i<count; i++) {
+        initDot();
+    }
+    draw();
+}
+
+function update() {
+    for(var i=0; i<dots.length; i++) {
+        var dot = dots[i],
+            xDx = dot.x + dot.dx,
+            yDy = dot.y + dot.dy;
+        
+        if (xDx - dot_size < 0 || xDx + dot_size > c.width) {
+            dot.dx = -dot.dx;
+        }
+      
+        if (yDy - dot_size < 0 || yDy + dot_size > c.height) {
+            dot.dy = -dot.dy;
+        }
+        
+        dot.x += dot.dx;
+        dot.y += dot.dy;
+        dot.color = getColor(dot.x, dot.y);
+          
+        drawDot(dot);
+    }
+}
+
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame       ||
+           window.webkitRequestAnimationFrame ||
+           window.mozRequestAnimationFrame    ||
+           window.oRequestAnimationFrame      ||
+           window.msRequestAnimationFrame     ||
+           function (callback) {
+               window.setTimeout(callback, 1000/60);
+           };
+})();
+
+function draw() {
+    update();
+    window.requestAnimFrame(draw); 
+}
+  </script>
+
+</body>
+</html>
